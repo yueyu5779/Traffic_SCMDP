@@ -11,4 +11,8 @@ class Experiment:
         pass
 
     def run(self):
-        pass
+        # initialize the world
+
+        # initialize vehicles
+        vehicles = []
+        
