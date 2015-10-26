@@ -1,5 +1,5 @@
 from config import *
-import World
+import world
 
 class Car:
     def __init__(self, start_pos, dest_pos, world):   
@@ -7,6 +7,8 @@ class Car:
         self.dest_pos = cp.deepcopy(dest_pos)
         # the world this agent lives in
         self.world = world
+        # update road block
+        self.world.world_map[self.pos[ROW]][self.pos[COL]].add_car()
 
     def legal(self, action):
         if action == UP: pos = [self.pos[ROW] - 1, self.pos[COL]]
@@ -20,7 +22,7 @@ class Car:
         if (pos[COL] >= self.world.columns): return False
         if (pos[COL] < 0): return False
         # check that the agent cannot move offroad
-        if self.world.world_map[pos[ROW]][pos[COL]].grid_type == OFFROAD: return False
+        if self.world.world_map[pos[ROW]][pos[COL]].block_type == OFFROAD: return False
         # check the traffic
         return self.world.world_map[pos[ROW]][pos[COL]].congest()
 

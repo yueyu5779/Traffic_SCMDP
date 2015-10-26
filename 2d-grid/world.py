@@ -1,21 +1,5 @@
 from config import *
 
-ROW = 0
-COL = 1
-# vehicle actions
-UP = 0; DOWN = 1; LEFT = 2; RIGHT = 3
-# Enums for the map
-INTERSECT = 0
-ROAD = 1
-OFFROAD = 2
-# number of road blocks between 2 intersections
-NUM_BLK_BTW = 3 
-# The default car density
-DEF_TRAFFIC = 0
-# Map
-CAP_HZ_ROAD = [20, 30, 40, 20]
-CAP_VT_ROAD = [50, 20, 30, 30]
-
 class Block:
     def __init__(self, pos, block_type, capacity):
         self.pos = cp.deepcopy(pos)
@@ -32,12 +16,9 @@ class Block:
         self.cap_cur += 1
 
     def congest(self):
-        # return true if a car can successfuly move into the block, based on current traffic capacity
+        '''return true if a car can successfuly move into the block, based on current traffic capacity'''
         return random.random() < 1 - (self.cap_cur + DEF_TRAFFIC) / self.cap_bound
-    
-    def draw(self):
-        pass
-    
+
 class World:
     def __init__(self):
         self.rows = (len(CAP_HZ_ROAD) - 1) * (NUM_BLK_BTW + 1) + 1
@@ -47,6 +28,7 @@ class World:
         self.construct_map()
 
     def construct_map(self):
+        ''' construct the world map by defining each block'''
         # fill in the horizontal roads
         for i in range(len(CAP_HZ_ROAD)):
             cur_row = i * (NUM_BLK_BTW + 1)
@@ -85,29 +67,35 @@ class World:
             for j in range(self.columns):
                 if self.world_map[i][j] == 0:
                     self.world_map[i][j] = Block([i,j], OFFROAD, 0) 
-    
+ 
+    def dist(self, start_pos, dest_pos):
+        '''get the distance between two positions'''
+        return abs(start_pos[ROW] - dest_pos[ROW]) + abs(start_pos[COL] - dest_pos[COL])
+
     def print_cap_map(self):
+        '''print capacity map in a matrix form'''
         for i in range(self.rows):
             for j in range(self.columns):
                 print('{:>4}'.format(self.world_map[i][j].cap_bound)),
             print('\n')
 
-    def draw(self):
+    def draw(self, isNew = False):
         CELL_SIZE = 40
         COLORS = ["pink", "lightblue", "white"]
-        width_ = (self.columns + 2) * CELL_SIZE
-        height_ = (self.rows + 2) * CELL_SIZE
-        # Draw map cells:
-        self.window = cg.GraphWin(title = "City Map", width = width_, height = height_)
-        # Draw position labels
-        # Row labels
-        for i in range(self.rows):
-            label = cg.Text(cg.Point((self.columns + 0.5) * CELL_SIZE, (i + 0.5) * CELL_SIZE),str(i))
-            label.draw(self.window)
-        # Column labels
-        for i in range(self.columns):
-            label = cg.Text(cg.Point((i + 0.5) * CELL_SIZE, (self.rows + 0.5) * CELL_SIZE),str(i))
-            label.draw(self.window)
+        if isNew:
+            width_ = (self.columns + 2) * CELL_SIZE
+            height_ = (self.rows + 2) * CELL_SIZE
+            # Draw map cells:
+            self.window = cg.GraphWin(title = "City Map", width = width_, height = height_)
+            # Draw position labels
+            # Row labels
+            for i in range(self.rows):
+                label = cg.Text(cg.Point((self.columns + 0.5) * CELL_SIZE, (i + 0.5) * CELL_SIZE),str(i))
+                label.draw(self.window)
+            # Column labels
+            for i in range(self.columns):
+                label = cg.Text(cg.Point((i + 0.5) * CELL_SIZE, (self.rows + 0.5) * CELL_SIZE),str(i))
+                label.draw(self.window)
 
         # Draw capacity bound at upper left corner and current capacity at lower right corner
         for i in range(self.rows):
@@ -126,7 +114,8 @@ class World:
                     cap_cur.draw(self.window)
 
 if __name__ == '__main__':
-    test_world = World()
-    test_world.print_cap_map()
-    test_world.draw()
-    raw_input("Print Enter to Exit")
+    main()
+    # test_world = World()
+    # test_world.print_cap_map()
+    # test_world.draw()
+    # raw_input("Print Enter to Exit")
