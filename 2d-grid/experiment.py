@@ -13,7 +13,7 @@ class Experiment:
         # initialize car
         self.cars = []
         for i in range(NUM_CARS):
-            new_car = car.Car(start_pos = [0,0], dest_pos = [], world = self.test_world)
+            new_car = car.Car(identity = i, start = [0,0], dest = [12,12], world = self.test_world)
             self.cars.append(new_car)
 
         self.vis = vis
@@ -22,11 +22,17 @@ class Experiment:
 
     def run(self):
         while (True):
-            self.cars[0].move(RIGHT) 
-            
+            # visualization
             if self.vis:
-                self.test_world.window.getMouse()
+                print("==========================================================")
+                print("{:<6} {:<6} {:<6}".format("CarID", "Position", "Destination"))
+                for car in self.cars:
+                    car.print_status()
                 self.test_world.draw()
+                self.test_world.window.getMouse()
+            
+            self.cars[0].choose_act_move() 
+            
 new_exp = Experiment()
 new_exp.run()
 

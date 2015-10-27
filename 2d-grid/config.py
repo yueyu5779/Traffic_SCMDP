@@ -15,11 +15,12 @@ NUM_BLK_BTW = 3
 # The default car density
 DEF_TRAFFIC = 0
 # Map
-CAP_HZ_ROAD = [20, 30, 40, 20]
+CAP_HZ_ROAD = [1, 30, 40, 20]
 CAP_VT_ROAD = [50, 20, 30, 30]
 
 # car actions
 UP = 0; DOWN = 1; LEFT = 2; RIGHT = 3
+ACTIONS = [UP, DOWN, LEFT, RIGHT]
 
 NUM_CARS = 1
 

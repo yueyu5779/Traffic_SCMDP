@@ -68,12 +68,39 @@ class World:
                 if self.world_map[i][j] == 0:
                     self.world_map[i][j] = Block([i,j], OFFROAD, 0) 
  
+    def legal(self, agent_pos, action):
+        '''determine whether an action of the agent is legal'''
+        if action == UP: pos = [agent_pos[ROW] - 1, agent_pos[COL]]
+        elif action == DOWN: pos = [agent_pos[ROW] + 1, agent_pos[COL]]
+        elif action == LEFT: pos = [agent_pos[ROW], agent_pos[COL] - 1]
+        elif action == RIGHT: pos = [agent_pos[ROW], agent_pos[COL] + 1]
+        '''check if a move to a new pos is legal'''
+        # check that the agent cannot move out of boundary
+        if (pos[ROW] >= self.rows): return False
+        if (pos[ROW] < 0): return False
+        if (pos[COL] >= self.columns): return False
+        if (pos[COL] < 0): return False
+        # check that the agent cannot move offroad
+        if self.world_map[pos[ROW]][pos[COL]].block_type == OFFROAD: return False
+        # check the traffic
+        return self.world_map[pos[ROW]][pos[COL]].congest()
+
     def dist(self, start_pos, dest_pos):
         '''get the distance between two positions'''
         return abs(start_pos[ROW] - dest_pos[ROW]) + abs(start_pos[COL] - dest_pos[COL])
 
+    def dist_act(self, agent_pos, action, dest_pos):
+        '''return the resulted distance after taking an action in the current map'''
+        if self.legal(agent_pos, action):
+            if action == UP: pos = [agent_pos[ROW] - 1, agent_pos[COL]]
+            elif action == DOWN: pos = [agent_pos[ROW] + 1, agent_pos[COL]]
+            elif action == LEFT: pos = [agent_pos[ROW], agent_pos[COL] - 1]
+            elif action == RIGHT: pos = [agent_pos[ROW], agent_pos[COL] + 1]
+            return self.dist(pos, dest_pos)
+        else: return self.dist(agent_pos, dest_pos)
+
     def print_cap_map(self):
-        '''print capacity map in a matrix form'''
+        '''print capacity map in a table form'''
         for i in range(self.rows):
             for j in range(self.columns):
                 print('{:>4}'.format(self.world_map[i][j].cap_bound)),
@@ -81,7 +108,6 @@ class World:
 
     def draw(self, isNew = False):
         CELL_SIZE = 40
-        COLORS = ["pink", "lightblue", "white"]
         if isNew:
             width_ = (self.columns + 2) * CELL_SIZE
             height_ = (self.rows + 2) * CELL_SIZE
@@ -102,7 +128,11 @@ class World:
             for j in range(self.columns):
                 if self.world_map[i][j].block_type != OFFROAD:
                     block = cg.Rectangle(cg.Point(j * CELL_SIZE, i * CELL_SIZE), cg.Point((j + 1) * CELL_SIZE, (i + 1) * CELL_SIZE))
-                    block.setFill(COLORS[self.world_map[i][j].block_type])
+                    # normal traffic situation
+                    if self.world_map[i][j].cap_bound > self.world_map[i][j].cap_cur: 
+                        block.setFill("lightblue")
+                    else: # traffic jam
+                        block.setFill("pink")
                     block.draw(self.window)
                     cap_bound = cg.Text(cg.Point((j+0.25) * CELL_SIZE, (i+0.25) * CELL_SIZE),str(self.world_map[i][j].cap_bound))
                     cap_bound.setSize(9)
