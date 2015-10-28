@@ -13,7 +13,7 @@ class Experiment:
         # initialize car
         self.cars = []
         for i in range(NUM_CARS):
-            new_car = car.Car(identity = i, start = [0,0], dest = [12,12], world = self.test_world)
+            new_car = car.Car(identity = i, start = [0,0], dest = [4,4], world = self.test_world)
             self.cars.append(new_car)
 
         self.vis = vis

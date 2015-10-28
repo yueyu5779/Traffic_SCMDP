@@ -22,6 +22,7 @@ class Car:
                 self.pos[COL] -=1
             if (action == RIGHT):
                 self.pos[COL] +=1
+            # if action is STAY nothing happens
             self.world.world_map[self.pos[ROW]][self.pos[COL]].add_car()
     
     def choose_act_move(self):

@@ -17,6 +17,7 @@ class Block:
 
     def congest(self):
         '''return true if a car can successfuly move into the block, based on current traffic capacity'''
+        '''change this'''
         return random.random() < 1 - (self.cap_cur + DEF_TRAFFIC) / self.cap_bound
 
 class World:
@@ -51,13 +52,13 @@ class World:
                 (i == 0 and j == len(CAP_VT_ROAD) - 1) \
                 or (i == len(CAP_HZ_ROAD) - 1 and j == 0) \
                 or (i == len(CAP_HZ_ROAD) -1 and j == len(CAP_VT_ROAD) - 1)):
-                    cap = CAP_HZ_ROAD[i] + CAP_VT_ROAD[j]
-                # Top and bottom intersects but not corners
-                elif (i == 0) or (i == len(CAP_HZ_ROAD) - 1): 
-                    cap = CAP_HZ_ROAD[i] * 2 + CAP_VT_ROAD[j]
-                # Leftmost and rightmost intersects but not corners
-                elif (j == 0) or (j == len(CAP_VT_ROAD) - 1): 
-                    cap = CAP_HZ_ROAD[i] + CAP_VT_ROAD[j] * 2
+                    cap = CAP_MAX
+#                # Top and bottom intersects but not corners
+#                elif (i == 0) or (i == len(CAP_HZ_ROAD) - 1): 
+#                    cap = CAP_HZ_ROAD[i] * 2 + CAP_VT_ROAD[j]
+#                # Leftmost and rightmost intersects but not corners
+#                elif (j == 0) or (j == len(CAP_VT_ROAD) - 1): 
+#                    cap = CAP_HZ_ROAD[i] + CAP_VT_ROAD[j] * 2
                 # other intersects
                 else: cap = (CAP_HZ_ROAD[i] + CAP_VT_ROAD[j]) / 2
                 self.world_map[ij_pos[ROW]][ij_pos[COL]] = Block(ij_pos, INTERSECT, cap)    
@@ -74,6 +75,7 @@ class World:
         elif action == DOWN: pos = [agent_pos[ROW] + 1, agent_pos[COL]]
         elif action == LEFT: pos = [agent_pos[ROW], agent_pos[COL] - 1]
         elif action == RIGHT: pos = [agent_pos[ROW], agent_pos[COL] + 1]
+        elif action == STAY: pos = cp.deepcopy(agent_pos)
         '''check if a move to a new pos is legal'''
         # check that the agent cannot move out of boundary
         if (pos[ROW] >= self.rows): return False
@@ -96,6 +98,7 @@ class World:
             elif action == DOWN: pos = [agent_pos[ROW] + 1, agent_pos[COL]]
             elif action == LEFT: pos = [agent_pos[ROW], agent_pos[COL] - 1]
             elif action == RIGHT: pos = [agent_pos[ROW], agent_pos[COL] + 1]
+            elif action == STAY: pos = cp.deepcopy(agent_pos)
             return self.dist(pos, dest_pos)
         else: return self.dist(agent_pos, dest_pos)
 
@@ -107,7 +110,6 @@ class World:
             print('\n')
 
     def draw(self, isNew = False):
-        CELL_SIZE = 40
         if isNew:
             width_ = (self.columns + 2) * CELL_SIZE
             height_ = (self.rows + 2) * CELL_SIZE
