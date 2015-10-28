@@ -11,21 +11,24 @@ INTERSECT = 0
 ROAD = 1
 OFFROAD = 2
 # number of road blocks between 2 intersections
-NUM_BLK_BTW = 1 
+NUM_BLK_BTW = 2 
 # The default car density
 DEF_TRAFFIC = 0
 # Map
 CAP_MAX = 999
-CAP_HZ_ROAD = [10,20,6]
-CAP_VT_ROAD = [8,14,24]
+CAP_HZ_ROAD = [1, 20, 30, 20, 10]
+CAP_VT_ROAD = [1, 30, 30, 20, 10]
+# CONGEST_FACTOR = 1 if we want congest_prob to be 1.0 when current traffic is 200% capacity
+# decrease this value to make penalty more harsh for violating upper bound 
+CONGEST_FACTOR = 0.5 
 
 # car actions
 UP = 0; DOWN = 1; LEFT = 2; RIGHT = 3; STAY = 4
 ACTIONS = [UP, DOWN, LEFT, RIGHT, STAY]
 
-NUM_CARS = 1
+NUM_CARS = 20
 
 # for visualization
-CELL_SIZE = 80
+CELL_SIZE = 40
 
 

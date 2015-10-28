@@ -12,7 +12,7 @@ class Car:
         self.world.world_map[self.pos[ROW]][self.pos[COL]].add_car()
 
     def move(self, action):
-        if (self.world.legal(self.pos, action)):
+        if (self.world.success_move(self.pos, action)):
             self.world.world_map[self.pos[ROW]][self.pos[COL]].rm_car()
             if (action == UP):
                 self.pos[ROW] -=1
@@ -25,8 +25,9 @@ class Car:
             # if action is STAY nothing happens
             self.world.world_map[self.pos[ROW]][self.pos[COL]].add_car()
     
-    def choose_act_move(self):
-        '''choose the action and move; it should be an RL-based agent but in this simple world it is just follow shortest distance'''
+    def greedy_act(self):
+        '''choose the action and move; shortest path with random tie-break'''
+        '''TBD, car can get stuck now'''
         dists = []
         for action in ACTIONS:
             dists.append(self.world.dist_act(self.pos, action, self.dest))
@@ -37,6 +38,10 @@ class Car:
         if len(best) == 1: act = best[0]
         elif len(best) > 1: act = random.choice(best)
         self.move(act)
+
+    def rl_act(self):
+        '''a reinforcement learning agent'''
+        pass
 
     def print_status(self):
         print("{:<6}".format(self.identity)),

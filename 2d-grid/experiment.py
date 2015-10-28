@@ -13,7 +13,7 @@ class Experiment:
         # initialize car
         self.cars = []
         for i in range(NUM_CARS):
-            new_car = car.Car(identity = i, start = [0,0], dest = [4,4], world = self.test_world)
+            new_car = car.Car(identity = i, start = [0,0], dest = [12,12], world = self.test_world)
             self.cars.append(new_car)
 
         self.vis = vis
@@ -31,7 +31,8 @@ class Experiment:
                 self.test_world.draw()
                 self.test_world.window.getMouse()
             
-            self.cars[0].choose_act_move() 
+            for car in self.cars: 
+                car.greedy_act() 
             
 new_exp = Experiment()
 new_exp.run()

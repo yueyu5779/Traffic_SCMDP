@@ -7,7 +7,7 @@ class Block:
         # capacity upper bound
         self.cap_bound = capacity 
         # store the vehicles in this block
-        self.cap_cur = 0
+        self.cap_cur = DEF_TRAFFIC
     
     def rm_car(self):
         self.cap_cur -= 1
@@ -15,10 +15,17 @@ class Block:
     def add_car(self):
         self.cap_cur += 1
 
+    def congest_prob(self):
+        '''based on the current capacity and bound, return the probability of congestion'''
+        # CONGEST_FACTOR = 1 if we want congest_prob to be 1.0 when current traffic is 2 times than capacity
+        # decrease this value to make penalty more harsh for violating upper bound 
+        congest_prob = min((self.cap_cur - self.cap_bound) / (self.cap_bound * CONGEST_FACTOR), 1)
+
     def congest(self):
         '''return true if a car can successfuly move into the block, based on current traffic capacity'''
-        '''change this'''
-        return random.random() < 1 - (self.cap_cur + DEF_TRAFFIC) / self.cap_bound
+        if self.cap_cur <= self.cap_bound: return False
+        else:
+            return random.random() > self.congest_prob()
 
 class World:
     def __init__(self):
@@ -69,7 +76,7 @@ class World:
                 if self.world_map[i][j] == 0:
                     self.world_map[i][j] = Block([i,j], OFFROAD, 0) 
  
-    def legal(self, agent_pos, action):
+    def success_move(self, agent_pos, action):
         '''determine whether an action of the agent is legal'''
         if action == UP: pos = [agent_pos[ROW] - 1, agent_pos[COL]]
         elif action == DOWN: pos = [agent_pos[ROW] + 1, agent_pos[COL]]
@@ -85,7 +92,7 @@ class World:
         # check that the agent cannot move offroad
         if self.world_map[pos[ROW]][pos[COL]].block_type == OFFROAD: return False
         # check the traffic
-        return self.world_map[pos[ROW]][pos[COL]].congest()
+        return not(self.world_map[pos[ROW]][pos[COL]].congest())
 
     def dist(self, start_pos, dest_pos):
         '''get the distance between two positions'''
@@ -93,7 +100,7 @@ class World:
 
     def dist_act(self, agent_pos, action, dest_pos):
         '''return the resulted distance after taking an action in the current map'''
-        if self.legal(agent_pos, action):
+        if self.success_move(agent_pos, action):
             if action == UP: pos = [agent_pos[ROW] - 1, agent_pos[COL]]
             elif action == DOWN: pos = [agent_pos[ROW] + 1, agent_pos[COL]]
             elif action == LEFT: pos = [agent_pos[ROW], agent_pos[COL] - 1]
@@ -131,7 +138,7 @@ class World:
                 if self.world_map[i][j].block_type != OFFROAD:
                     block = cg.Rectangle(cg.Point(j * CELL_SIZE, i * CELL_SIZE), cg.Point((j + 1) * CELL_SIZE, (i + 1) * CELL_SIZE))
                     # normal traffic situation
-                    if self.world_map[i][j].cap_bound > self.world_map[i][j].cap_cur: 
+                    if self.world_map[i][j].cap_bound >= self.world_map[i][j].cap_cur: 
                         block.setFill("lightblue")
                     else: # traffic jam
                         block.setFill("pink")
