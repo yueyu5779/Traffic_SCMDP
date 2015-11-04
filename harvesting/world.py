@@ -27,7 +27,7 @@ class Patch:
         return self.cap_cur < self.cap_bound
     
     def count_reward(self):
-        return self.cap_cur * self.reward
+        return min(self.cap_cur,self.cap_bound) * self.reward
     
     def count_violation(self):
         return max(self.cap_cur - self.cap_bound, 0) 
