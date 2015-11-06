@@ -6,8 +6,12 @@ from config import *
 import world
 import car
 
+GREEDY = 0 # Shortest path
+A_STAR = 1
+SCMDP = 2
+
 class Experiment:
-    def __init__(self, vis = True):
+    def __init__(self, vis = True, alg):
         # initialize the world
         self.test_world = world.World()
         # initialize car
@@ -15,6 +19,8 @@ class Experiment:
         for i in range(NUM_CARS):
             new_car = car.Car(identity = i, start = [0,0], dest = [12,12], world = self.test_world)
             self.cars.append(new_car)
+        
+        self.alg = alg
 
         self.vis = vis
         if self.vis:
@@ -32,9 +38,10 @@ class Experiment:
                 self.test_world.window.getMouse()
             
             for car in self.cars: 
-                car.greedy_act() 
+                if self.alg == GREEDY_ACT:             
+                    car.greedy_act() 
             
-new_exp = Experiment()
+new_exp = Experiment(alg = GREEDY)
 new_exp.run()
 
 raw_input("Please Press Enter to Exit")
