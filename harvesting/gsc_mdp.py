@@ -18,7 +18,14 @@ import heu_bf_policy as bf
 import mc_x as MC
 
 
-def mdp(G, R, RT, L, d, x0, gamma):
+def mdp(G_, R_, RT_, L_, d_, x0_, gamma_):
+    G = cp.deepcopy(G_)
+    R = cp.deepcopy(R_)
+    RT = cp.deepcopy(RT_)
+    L = cp.deepcopy(L_)
+    d = cp.deepcopy(d_)
+    x0 = cp.deepcopy(x0_)
+    gamma = cp.deepcopy(gamma_)
     [T, n, A]=R.shape
     T=T+1
     # prelocating
@@ -73,7 +80,7 @@ def mdp(G, R, RT, L, d, x0, gamma):
     bf_x=cp.deepcopy(phi_x)
 
     while i <= TO:
-        print(i)
+        # print(i)
         temp_x=cp.deepcopy(bf_x)
 
         for j in range(T-2,-1,-1):
@@ -86,7 +93,7 @@ def mdp(G, R, RT, L, d, x0, gamma):
 
         i=i+1
 
-    print("M shape", np.shape(phi_M))
+    # print("M shape", np.shape(phi_M))
 
     return un_Q, un_x, phi_Q, phi_x, bf_Q, bf_x
 

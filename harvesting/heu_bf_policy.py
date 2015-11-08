@@ -13,6 +13,7 @@
 import numpy as np
 from cvxopt import matrix, solvers
 
+solvers.options['show_progress'] = False
 
 def policy(g, rt, L, d, x, u_next, u_ref, opt_ref,  gamma):
     [m,temp]=d.shape
@@ -164,7 +165,7 @@ def policy(g, rt, L, d, x, u_next, u_ref, opt_ref,  gamma):
 
     sol= solvers.lp(c,Aineq,bineq,Aeq,beq)
     var= np.array(sol['x'])
-    print(var.shape)
+    # print(var.shape)
 
     temp_q=var[0:n*A,:]
     Q=temp_q.reshape(n,A)

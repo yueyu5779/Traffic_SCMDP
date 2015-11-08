@@ -16,7 +16,7 @@ class Patch:
 
     def assign_agent(self, agent):
         self.cap_cur += 1
-        self.agents.append(cp.deepcopy(agent))
+        self.agents.append(agent)
 
     def change_bound(self):
         # reset current capacity
@@ -31,10 +31,15 @@ class Patch:
     
     def count_violation(self):
         return max(self.cap_cur - self.cap_bound, 0) 
+    
+    def remove_agent(self, agent):
+        self.cap_cur -= 1
+        self.agents.remove(agent)
 
-    def return_agents(self, agents):
+    def return_agents(self, another_patch):
+        ''' return all agents to home patch '''
         for agent in self.agents[:]:
-            agents.append(cp.deepcopy(agent))
+            another_patch.assign_agent(agent)
             self.agents.remove(agent)
 
 class Agent:
