@@ -13,9 +13,11 @@
 import numpy as np
 from cvxopt import matrix, solvers
 
-solvers.options['show_progress'] = False
+# solvers.options['show_progress'] = False
 
 def policy(g, rt, L, d, x, u_next, u_ref, opt_ref,  gamma):
+    # add a small constant to resolve numerical issue
+    opt_ref += 10e-5
     [m,temp]=d.shape
     [A, temp, n]=g.shape
 
