@@ -18,8 +18,8 @@ class Block:
     def congest_prob(self):
         '''based on the current capacity and bound, return the probability of congestion'''
         # CONGEST_FACTOR = 1 if we want congest_prob to be 1.0 when current traffic is 2 times than capacity
-        # decrease this value to make penalty more harsh for violating upper bound 
-        congest_prob = min((self.cap_cur - self.cap_bound) / (self.cap_bound * CONGEST_FACTOR), 1)
+        # increase this value to make penalty more harsh for violating upper bound 
+        congest_prob = min(CONGEST_FACTOR * (self.cap_cur - self.cap_bound) / (self.cap_bound), 1)
 
     def congest(self):
         '''return true if a car can successfuly move into the block, based on current traffic capacity'''

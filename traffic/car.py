@@ -39,8 +39,8 @@ class Car:
         elif len(best) > 1: act = random.choice(best)
         self.move(act)
 
-    def rl_act(self):
-        '''a reinforcement learning agent'''
+    def a_star_act(self):
+        '''an a_star (time-based) agent'''
         pass
 
     def print_status(self):

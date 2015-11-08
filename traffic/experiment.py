@@ -11,7 +11,7 @@ A_STAR = 1
 SCMDP = 2
 
 class Experiment:
-    def __init__(self, vis = True, alg):
+    def __init__(self, vis = True, alg = GREEDY):
         # initialize the world
         self.test_world = world.World()
         # initialize car
@@ -38,7 +38,7 @@ class Experiment:
                 self.test_world.window.getMouse()
             
             for car in self.cars: 
-                if self.alg == GREEDY_ACT:             
+                if self.alg == GREEDY:             
                     car.greedy_act() 
             
 new_exp = Experiment(alg = GREEDY)
