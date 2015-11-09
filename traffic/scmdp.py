@@ -7,21 +7,23 @@ import roulette
 np.set_printoptions(precision = 2, suppress = True)
 
 class SCMDP:
-    def __init__(self, reward_vec = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], \
-    cap_vec = [1.0, 0.9, 0.0, 0, 0, 0, 0, 0, 0, 0, 0], \
-    x0 = [1.0, 0.0, 0.0, 0,0,0,0,0,0,0,0]):
+    def __init__(self, reward_vec = [0, 3, 4, 5], \
+    cap_vec = [1.0, 0.0, 0.2, 0.4], \
+    x0 = [1.0, 0.0, 0.0, 0.0]):
         self.reward_vec = np.array(cp.deepcopy(reward_vec))
         self.cap_vec = np.array(cp.deepcopy(cap_vec))
         self.x0 = np.array(cp.deepcopy(x0))
         # length of planning horizon
-        T = 10; self.T = T
+        T = 3; self.T = T
         # number of states
-        n = 11; self.n = n
+        n = 4; self.n = n
         # number of actions
-        A = 11; self.A = A
+        A = 4; self.A = A
         
         # construct transition matrix G
-        SUCCESS_RATE = 0.9
+        self.G = np.zeros((A, n, n))
+        # construct transition matrix G
+        SUCCESS_RATE = 1.0
         self.G = np.zeros((A, n, n))
         for act in range(A):
             # construct the 1-step transition matrix
@@ -30,6 +32,12 @@ class SCMDP:
             for j in range(n):
                 if j != act: self.G[act, j, j] = 1 - SUCCESS_RATE
                 else: self.G[act, j, j] = 1
+        vec_temp = np.zeros((n,1))
+        vec_temp[3,0] = 1
+        for act in range(A):
+            for j in range(4):
+                self.G[act,j,3] = vec_temp[j,0]
+        self.G[3,:,:] = np.eye(n)
         # print(self.G)
 
         # construct reward matrix R (over T-1 horizon)

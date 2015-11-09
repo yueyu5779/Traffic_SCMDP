@@ -7,30 +7,36 @@ import roulette
 np.set_printoptions(precision = 2, suppress = True)
 
 class SCMDP:
-    def __init__(self, reward_vec = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], \
-    cap_vec = [1.0, 0.9, 0.0, 0, 0, 0, 0, 0, 0, 0, 0], \
-    x0 = [1.0, 0.0, 0.0, 0,0,0,0,0,0,0,0]):
+    def __init__(self, reward_vec = [0, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1], \
+    cap_vec = [1.0, 0.5, 0.3, 0.4, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1], \
+    x0 = [1.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0]):
         self.reward_vec = np.array(cp.deepcopy(reward_vec))
         self.cap_vec = np.array(cp.deepcopy(cap_vec))
         self.x0 = np.array(cp.deepcopy(x0))
         # length of planning horizon
-        T = 10; self.T = T
+        T = 2; self.T = T
         # number of states
         n = 11; self.n = n
         # number of actions
         A = 11; self.A = A
-        
         # construct transition matrix G
-        SUCCESS_RATE = 0.9
         self.G = np.zeros((A, n, n))
-        for act in range(A):
-            # construct the 1-step transition matrix
-            for i in range(n):
-                self.G[act, act, i] = SUCCESS_RATE
+        # Action 0 has special transition: all states can go back to home
+        AG_HOME = np.zeros((n, n))
+        for i in range(n):
             for j in range(n):
-                if j != act: self.G[act, j, j] = 1 - SUCCESS_RATE
-                else: self.G[act, j, j] = 1
-        # print(self.G)
+                if i == 0: AG_HOME[i][j] = 1
+        self.G[0,:,:] = cp.deepcopy(AG_HOME)
+        for act in range(1, A):
+            # construct the 1-step transition matrix
+            AG = np.zeros((n, n))
+            for i in range(n):
+                for j in range(n):
+                    # identity matrix
+                    if i >= 1 and j >= 1 and i == j: AG[i][j] = 1
+                    elif j == 0 and act == i: AG[i][j] = 1
+            self.G[act,:,:] = cp.deepcopy(AG)
+        print(self.G)
 
         # construct reward matrix R (over T-1 horizon)
         self.R = np.zeros((T - 1, n, A))
@@ -84,7 +90,7 @@ class SCMDP:
         action = roulette_selector.select()
         print("Action selected:", action)
         return action
-        #TBD: transition is not definitely success
+        
 
 sc = SCMDP()
 sc.solve()
