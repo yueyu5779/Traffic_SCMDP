@@ -4,7 +4,7 @@ import gsc_mdp as GSC
 import copy as cp
 import roulette
 
-np.set_printoptions(precision = 2, suppress = True)
+np.set_printoptions(precision = 2, suppress = True, threshold = 'nan')
 
 class SCMDP:
     def __init__(self, T, n, A, trans_suc_rate, reward_vec, cap_vec, x0):
@@ -59,10 +59,17 @@ class SCMDP:
 
         # discount factor
         self.gamma = 0.99
+        
+        # policy matrix
+        self.bf_Q = []
+        self.bf_x = []
+        self.phi_Q = []
+        self.phi_x = []
+        self.un_Q = []
+        self.un_x = []
 
     def solve(self):
-        [un_Q, un_x, phi_Q, phi_x, bf_Q, bf_x] = GSC.mdp(self.G, self.R, self.RT, self.L, self.d, self.x0, self.gamma)
-        self.bf_Q = bf_Q
+        [self.un_Q, self.un_x, self.phi_Q, self.phi_x, self.bf_Q, self.bf_x] = GSC.mdp(self.G, self.R, self.RT, self.L, self.d, self.x0, self.gamma)
         print("scmdp policy solved")
 #        print(self.bf_Q)
 #        print(bf_x)
@@ -84,6 +91,13 @@ class SCMDP:
         # print("Action selected:", action)
         return action
 
+    def choose_act_phi(self, state, T):
+        policy = self.phi_Q[T][state]
+        # print("Policy vector", policy)
+        roulette_selector = roulette.Roulette(policy)
+        action = roulette_selector.select()
+        # print("Action selected:", action)
+        return action
 
 #sc = SCMDP(T = 3, n = 11, A = 11, trans_suc_rate = 0.9, reward_vec = [0, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1], \
 #cap_vec = [1.0, 0.9, 0.0, 0, 0, 0, 0, 0, 0, 0, 0], \

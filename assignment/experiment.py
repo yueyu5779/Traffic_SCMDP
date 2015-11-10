@@ -6,8 +6,9 @@ import sys
 import roulette
 import scmdp
 import numpy as np
+from tempfile import TemporaryFile
 
-NUM_AGENT = 10000
+NUM_AGENT = 1000
 NUM_STATE = 11
 HOME = 0
 REWARD = [0,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1]
@@ -23,22 +24,45 @@ CENTRALIZED = 0
 RANDOM = 1
 SAFE = 2
 GREEDY = 3
-SCMDP = 4
-ALGS = [CENTRALIZED, RANDOM, SAFE, GREEDY, SCMDP]
-ALGS_NAME = ["CENTRALIZED", "RANDOM", "SAFE", "GREEDY", "SCMDP"]
+SCMDPPHI = 4
+SCMDPBF = 5
+ALGS = [CENTRALIZED, RANDOM, SAFE, GREEDY, SCMDPPHI, SCMDPBF]
+ALGS_NAME = ["CENTRALIZED", "RANDOM", "SAFE", "GREEDY", "SCMDPPHI", "SCMDPBF"]
 
 DROP_RATIO = 0.5 # each episode each agent in nonhome patch has probability to be dropped
 ADD_RATIO = 1.0 # each episode add some agents to home, but not exceeding initial total number
 
 TRANS_SUC_RATE = 0.9 # state transition success rate
 
-NEED_SCMDP_SOLVER = True
-if NEED_SCMDP_SOLVER:
+EXPERIMENT = True
+
+# solve for SCMDP policy and save to a file; or load from that file
+NEED_SCMDP_SOLVE = False
+if NEED_SCMDP_SOLVE:
     # initialize scmdp solver
     SCMDP_SELECTOR = scmdp.SCMDP(T = NUM_EPISODE, n = NUM_STATE, A = NUM_STATE,\
     trans_suc_rate = TRANS_SUC_RATE, reward_vec = REWARD, cap_vec = CAP_DENSITY, x0 = INIT_DENSITY)
     # solve for policy matrix
     SCMDP_SELECTOR.solve()
+    np.save("un_Q", SCMDP_SELECTOR.un_Q)
+    np.save("un_x", SCMDP_SELECTOR.un_x)
+    np.save("phi_Q", SCMDP_SELECTOR.phi_Q)
+    np.save("phi_x", SCMDP_SELECTOR.phi_x)
+    np.save("bf_Q", SCMDP_SELECTOR.bf_Q)
+    np.save("bf_x", SCMDP_SELECTOR.bf_x)
+    print(SCMDP_SELECTOR.bf_Q)
+    print(SCMDP_SELECTOR.bf_x)
+else:
+    SCMDP_SELECTOR = scmdp.SCMDP(T = NUM_EPISODE, n = NUM_STATE, A = NUM_STATE,\
+    trans_suc_rate = TRANS_SUC_RATE, reward_vec = REWARD, cap_vec = CAP_DENSITY, x0 = INIT_DENSITY)
+    SCMDP_SELECTOR.un_Q = np.load("un_Q.npy")
+    SCMDP_SELECTOR.un_x = np.load("un_x.npy")
+    SCMDP_SELECTOR.phi_Q = np.load("phi_Q.npy")
+    SCMDP_SELECTOR.phi_x = np.load("phi_x.npy")
+    SCMDP_SELECTOR.bf_Q = np.load("bf_Q.npy")
+    SCMDP_SELECTOR.bf_x = np.load("bf_x.npy")
+#    print(SCMDP_SELECTOR.phi_Q)
+#    print(SCMDP_SELECTOR.phi_x)
 
 class Experiment:
     def __init__(self, num_agent, alg, trans_suc_rate, num_episode, num_state, drop_ratio, add_ratio, rewards, cap_density, data_file):
@@ -162,8 +186,19 @@ class Experiment:
                 # actual move step
                 self.move_agents()
 
-            # algorithm 4: SC-MDP
-            elif self.alg == SCMDP:
+            # algorithm 4: SC-MDP feasible policy
+            elif self.alg == SCMDPPHI:
+                # assignment
+                for patch in self.patches:
+                    for agent in patch.agents: 
+                        patch_num = SCMDP_SELECTOR.choose_act_phi(state = patch.identity, T = agent.clock)
+                        agent.assign_to(patch_num)
+                        agent.tick() # important: time clock counts
+                # actual move step
+                self.move_agents()
+
+            # algorithm 5: SC-MDP with heuristic
+            elif self.alg == SCMDPBF:
                 # assignment
                 for patch in self.patches:
                     for agent in patch.agents: 
@@ -204,13 +239,13 @@ class Experiment:
         print("experiment finished")
         self.data_file.close()
 
-
-for i in range(len(ALGS)):
-    for j in range(20): # repeat 20 times
-        new_exp = Experiment(num_agent = NUM_AGENT, alg = ALGS[i],\
-        trans_suc_rate = TRANS_SUC_RATE,\
-        num_episode = NUM_EPISODE, num_state = NUM_STATE,\
-        drop_ratio = DROP_RATIO, add_ratio = ADD_RATIO,\
-        rewards = REWARD, cap_density = CAP_DENSITY,\
-        data_file = "data/" + ALGS_NAME[i] + str(j) + ".data") 
-        new_exp.run()
+if EXPERIMENT:
+    for i in range(0, len(ALGS)):
+        for j in range(50): # repeat 20 times
+            new_exp = Experiment(num_agent = NUM_AGENT, alg = ALGS[i],\
+            trans_suc_rate = TRANS_SUC_RATE,\
+            num_episode = NUM_EPISODE, num_state = NUM_STATE,\
+            drop_ratio = DROP_RATIO, add_ratio = ADD_RATIO,\
+            rewards = REWARD, cap_density = CAP_DENSITY,\
+            data_file = "data/" + ALGS_NAME[i] + str(j) + ".data") 
+            new_exp.run()

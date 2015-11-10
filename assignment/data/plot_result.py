@@ -4,7 +4,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import copy as cp
 import scipy.stats as ss
-NUM_EXP = 4
+
+NUM_EXP = 50
+dirname = ""
 
 def process_file(filename):
     data_file = open(filename, 'r')
@@ -28,7 +30,7 @@ def process_data(name):
     vs = []
 
     for i in range(NUM_EXP):
-        filename = name + str(i) + ".data"
+        filename = dirname + name + str(i) + ".data"
         eps_, rs_, vs_ = process_file(filename)
         eps.append(cp.deepcopy(eps_))
         rs.append(cp.deepcopy(rs_))
@@ -46,31 +48,35 @@ def process_data(name):
 
     return dof, eps, rs_mean, rs_std, vs_mean, vs_std
 
-#cent_dof, cent_eps, cent_rs_mean, cent_rs_std, cent_vs_mean, cent_vs_std = process_data("CENTRALIZED")
+SHOW_REWARD = True
+cent_dof, cent_eps, cent_rs_mean, cent_rs_std, cent_vs_mean, cent_vs_std = process_data("CENTRALIZED")
 rand_dof, rand_eps, rand_rs_mean, rand_rs_std, rand_vs_mean, rand_vs_std = process_data("RANDOM")
-#safe_dof, safe_eps, safe_rs_mean, safe_rs_std, safe_vs_mean, safe_vs_std = process_data("SAFE")
-#grdy_dof, grdy_eps, grdy_rs_mean, grdy_rs_std, grdy_vs_mean, grdy_vs_std = process_data("GREEDY")
-#smdp_dof, smdp_eps, smdp_rs_mean, smdp_rs_std, smdp_vs_mean, smdp_vs_std = process_data("SCMDP")
+safe_dof, safe_eps, safe_rs_mean, safe_rs_std, safe_vs_mean, safe_vs_std = process_data("SAFE")
+grdy_dof, grdy_eps, grdy_rs_mean, grdy_rs_std, grdy_vs_mean, grdy_vs_std = process_data("GREEDY")
+smdpphi_dof, smdpphi_eps, smdpphi_rs_mean, smdpphi_rs_std, smdpphi_vs_mean, smdpphi_vs_std = process_data("SCMDPPHI")
+smdpbf_dof, smdpbf_eps, smdpbf_rs_mean, smdpbf_rs_std, smdpbf_vs_mean, smdpbf_vs_std = process_data("SCMDPBF")
 
-# plot rewards
-#plt.errorbar(cent_eps[0], cent_rs_mean, xerr=ss.t.ppf(0.95, cent_dof)*cent_rs_std)
-plt.errorbar(rand_eps[0], rand_rs_mean, xerr=ss.t.ppf(0.95, rand_dof)*rand_rs_std)
-#plt.errorbar(safe_eps[0], safe_rs_mean, xerr=ss.t.ppf(0.95, safe_dof)*safe_rs_std)
-#plt.errorbar(grdy_eps[0], grdy_rs_mean, xerr=ss.t.ppf(0.95, grdy_dof)*grdy_rs_std)
-#plt.errorbar(smdp_eps[0], smdp_rs_mean, xerr=ss.t.ppf(0.95, smdp_dof)*smdp_rs_std)
-plt.xlim((-1,100))
-plt.show()
+if SHOW_REWARD:
+    # plot rewards
+    plt.errorbar(cent_eps[0], cent_rs_mean, yerr=ss.t.ppf(0.95, cent_dof)*cent_rs_std, color = 'c')
+    plt.errorbar(rand_eps[0], rand_rs_mean, yerr=ss.t.ppf(0.95, rand_dof)*rand_rs_std, color = 'k')
+    plt.errorbar(safe_eps[0], safe_rs_mean, yerr=ss.t.ppf(0.95, safe_dof)*safe_rs_std, color = 'y')
+    plt.errorbar(grdy_eps[0], grdy_rs_mean, yerr=ss.t.ppf(0.95, grdy_dof)*grdy_rs_std, color = 'g')
+    plt.errorbar(smdpphi_eps[0], smdpphi_rs_mean, yerr=ss.t.ppf(0.95, smdpphi_dof)*smdpphi_rs_std, color = 'r')
+    plt.errorbar(smdpbf_eps[0], smdpbf_rs_mean, yerr=ss.t.ppf(0.95, smdpbf_dof)*smdpbf_rs_std, color = 'b')
+#    plt.xlim((-1,100))
+    plt.show()
 
+#else:
 # plot violations
-#plt.errorbar(cent_eps[0], cent_vs_mean, xerr=ss.t.ppf(0.95, cent_dof)*cent_vs_std)
-#plt.errorbar(rand_eps[0], rand_vs_mean, xerr=ss.t.ppf(0.95, rand_dof)*rand_vs_std)
-#plt.errorbar(safe_eps[0], safe_vs_mean, xerr=ss.t.ppf(0.95, safe_dof)*safe_vs_std)
-#plt.errorbar(grdy_eps[0], grdy_vs_mean, xerr=ss.t.ppf(0.95, grdy_dof)*grdy_vs_std)
-#plt.errorbar(smdp_eps[0], smdp_vs_mean, xerr=ss.t.ppf(0.95, smdp_dof)*smdp_vs_std)
-#plt.xlim((-1,100))
-#plt.show()
+    plt.errorbar(cent_eps[0], cent_vs_mean, yerr=ss.t.ppf(0.95, cent_dof)*cent_vs_std, color = 'c')
+    plt.errorbar(rand_eps[0], rand_vs_mean, yerr=ss.t.ppf(0.95, rand_dof)*rand_vs_std, color = 'k')
+    plt.errorbar(safe_eps[0], safe_vs_mean, yerr=ss.t.ppf(0.95, safe_dof)*safe_vs_std, color = 'y')
+    plt.errorbar(grdy_eps[0], grdy_vs_mean, yerr=ss.t.ppf(0.95, grdy_dof)*grdy_vs_std, color = 'g')
+    plt.errorbar(smdpphi_eps[0], smdpphi_vs_mean, yerr=ss.t.ppf(0.95, smdpphi_dof)*smdpphi_vs_std, color = 'r')
+    plt.errorbar(smdpbf_eps[0], smdpbf_vs_mean, yerr=ss.t.ppf(0.95, smdpbf_dof)*smdpbf_vs_std, color = 'b')
+    ax = plt.subplot()
+    ax.set_yscale("log")
+    plt.show()
 
-# red dashes, blue squares and green triangles
-#plt.plot(rand_e, rand_v, 'r--')
-#plt.show()
 
