@@ -63,9 +63,9 @@ class SCMDP:
     def solve(self):
         [un_Q, un_x, phi_Q, phi_x, bf_Q, bf_x] = GSC.mdp(self.G, self.R, self.RT, self.L, self.d, self.x0, self.gamma)
         self.bf_Q = bf_Q
-        print("Resulted bf policy:")
-        print(self.bf_Q)
-        print(bf_x)
+#        print("Resulted bf policy:")
+#        print(self.bf_Q)
+#        print(bf_x)
 #        res_un = np.dot(self.d, np.ones((1, self.T))) - np.dot(self.L, un_x)
 #        res_phi = np.dot(self.d, np.ones((1, self.T))) - np.dot(self.L, phi_x)
 #        res_bf = np.dot(self.d, np.ones((1, self.T))) - np.dot(self.L, bf_x)
