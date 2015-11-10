@@ -7,16 +7,17 @@ import roulette
 import scmdp
 import numpy as np
 
-NUM_AGENT = 1000
+NUM_AGENT = 10000
 NUM_STATE = 11
 HOME = 0
 REWARD = [0,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1]
 
 # capacity density upper bound
 CAP_DENSITY = [1.0, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05]
-#CAP_DENSITY = [1.0, 0.5, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+#CAP_DENSITY = [1.0, 0.02, 0.1, 0.5, 0.01, 0.04, 0.3, 0.2, 0.01, 0.1, 0.2]
+INIT_DENSITY = [1.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-NUM_EPISODE = 20
+NUM_EPISODE = 100
 # allocation algorithms
 CENTRALIZED = 0
 RANDOM = 1
@@ -27,9 +28,17 @@ ALGS = [CENTRALIZED, RANDOM, SAFE, GREEDY, SCMDP]
 ALGS_NAME = ["CENTRALIZED", "RANDOM", "SAFE", "GREEDY", "SCMDP"]
 
 DROP_RATIO = 0.5 # each episode each agent in nonhome patch has probability to be dropped
-ADD_RATIO = 0.75 # each episode add some agents to home, but not exceeding initial total number
+ADD_RATIO = 1.0 # each episode add some agents to home, but not exceeding initial total number
 
 TRANS_SUC_RATE = 0.9 # state transition success rate
+
+NEED_SCMDP_SOLVER = True
+if NEED_SCMDP_SOLVER:
+    # initialize scmdp solver
+    SCMDP_SELECTOR = scmdp.SCMDP(T = NUM_EPISODE, n = NUM_STATE, A = NUM_STATE,\
+    trans_suc_rate = TRANS_SUC_RATE, reward_vec = REWARD, cap_vec = CAP_DENSITY, x0 = INIT_DENSITY)
+    # solve for policy matrix
+    SCMDP_SELECTOR.solve()
 
 class Experiment:
     def __init__(self, num_agent, alg, trans_suc_rate, num_episode, num_state, drop_ratio, add_ratio, rewards, cap_density, data_file):
@@ -155,21 +164,10 @@ class Experiment:
 
             # algorithm 4: SC-MDP
             elif self.alg == SCMDP:
-                # solve for policy at the first episode
-                if episode == 0:
-                    # construct density, reward, initial distribution vector
-                    initial_density = []
-                    for patch in self.patches:
-                        initial_density.append(1.0 * patch.cap_cur / self.num_agent)
-                    # initialize scmdp solver
-                    self.scmdp_selector = scmdp.SCMDP(T = self.num_episode, n = self.num_state, A = self.num_state,\
-                    trans_suc_rate = self.trans_suc_rate, reward_vec = self.rewards, cap_vec = self.cap_density, x0 = initial_density)
-                    # solve for policy matrix
-                    self.scmdp_selector.solve()
                 # assignment
                 for patch in self.patches:
                     for agent in patch.agents: 
-                        patch_num = self.scmdp_selector.choose_act(state = patch.identity, T = agent.clock)
+                        patch_num = SCMDP_SELECTOR.choose_act(state = patch.identity, T = agent.clock)
                         agent.assign_to(patch_num)
                         agent.tick() # important: time clock counts
                 # actual move step
@@ -208,10 +206,11 @@ class Experiment:
 
 
 for i in range(len(ALGS)):
-    new_exp = Experiment(num_agent = NUM_AGENT, alg = ALGS[i],\
-    trans_suc_rate = TRANS_SUC_RATE,\
-    num_episode = NUM_EPISODE, num_state = NUM_STATE,\
-    drop_ratio = DROP_RATIO, add_ratio = ADD_RATIO,\
-    rewards = REWARD, cap_density = CAP_DENSITY,\
-    data_file = "data/" + ALGS_NAME[i] + ".data") 
-    new_exp.run()
+    for j in range(20): # repeat 20 times
+        new_exp = Experiment(num_agent = NUM_AGENT, alg = ALGS[i],\
+        trans_suc_rate = TRANS_SUC_RATE,\
+        num_episode = NUM_EPISODE, num_state = NUM_STATE,\
+        drop_ratio = DROP_RATIO, add_ratio = ADD_RATIO,\
+        rewards = REWARD, cap_density = CAP_DENSITY,\
+        data_file = "data/" + ALGS_NAME[i] + str(j) + ".data") 
+        new_exp.run()
