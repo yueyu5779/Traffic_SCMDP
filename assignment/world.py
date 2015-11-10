@@ -41,7 +41,13 @@ class Patch:
         for agent in self.agents[:]:
             another_patch.assign_agent(agent)
             self.agents.remove(agent)
+        self.cap_cur = 0
 
 class Agent:
     def __init__(self, identity):
         self.identity = identity
+        # temporarily save assigned patch index
+        self.assigned_patch = 0
+    
+    def assign_to(self, index):
+        self.assigned_patch = index

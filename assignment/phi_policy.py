@@ -9,7 +9,7 @@
 import numpy as np
 from cvxopt import matrix, solvers
 
-# solvers.options['show_progress'] = False
+solvers.options['show_progress'] = False
 
 def policy(G, R0, L, d, u_next, gamma):
 
