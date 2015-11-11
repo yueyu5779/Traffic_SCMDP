@@ -29,8 +29,8 @@ class Block:
 
 class World:
     def __init__(self):
-        self.rows = (len(CAP_HZ_ROAD) - 1) * (NUM_BLK_BTW + 1) + 1
-        self.columns = (len(CAP_VT_ROAD) - 1) * (NUM_BLK_BTW + 1) + 1
+        self.rows = WORLD_ROWS 
+        self.columns = WORLD_COLS 
         # represent map as a 2D array
         self.world_map = [[0 for x in range(self.columns)] for x in range(self.rows)]
         self.construct_map()
@@ -71,11 +71,15 @@ class World:
                 self.world_map[ij_pos[ROW]][ij_pos[COL]] = Block(ij_pos, INTERSECT, cap)    
 
         # fill in the rest of the map by OFFROAD
+        num_off_road = 0
         for i in range(self.rows):
             for j in range(self.columns):
                 if self.world_map[i][j] == 0:
                     self.world_map[i][j] = Block([i,j], OFFROAD, 0) 
- 
+                    num_off_road += 1
+
+        self.num_road = self.rows * self.columns - num_off_road
+
     def success_move(self, agent_pos, action):
         '''determine whether an action of the agent is legal'''
         if action == UP: pos = [agent_pos[ROW] - 1, agent_pos[COL]]
