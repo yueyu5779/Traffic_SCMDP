@@ -5,17 +5,11 @@ import copy as cp
 import roulette
 
 from config import *
-import car
 import world
+import car
+import state
 
 np.set_printoptions(precision = 2, suppress = True, threshold = 'nan')
-
-class State_Dict:
-    def __init__(self, world):
-        self.world = world
-
-
-
 
 class SCMDP:
     def __init__(self, T, n, A, m, trans_suc_rate):
@@ -62,21 +56,27 @@ class SCMDP:
         self.un_x = []
 
     def construct_G(self):
+        '''A x n x n'''
         pass
 
     def construct_RT(self):
+        ''' n x 1'''
         pass
 
     def construct_R(self):
+        ''' (T-1) x n x A'''
         pass
 
     def construct_L(self):
+        ''' m x n'''
         pass
 
     def construct_d(self):
+        ''' m x 1'''
         pass
 
     def construct_x0(self):
+        ''' n x 1, assume cars are distributed equally in each corner; so 1/8 of each type at each corner '''
         pass
 
 
@@ -95,6 +95,13 @@ class SCMDP:
 #        print(np.dot(self.L,phi_x))
 #        print(np.dot(self.L,bf_x))
 
+    def save_to_file(self):
+        '''save un_Q, un_x, phi_Q, phi_x, bf_Q, bf_x to .npy files'''
+        pass
+
+    def load_from_file(self):
+        pass
+
     def choose_act(self, state, T):
         policy = self.bf_Q[T][state]
         # print("Policy vector", policy)
@@ -111,5 +118,10 @@ class SCMDP:
         # print("Action selected:", action)
         return action
 
-test_world = world.World()
-sc = SCMDP(T = 15, m = , n = , A = len(ACTIONS), trans_suc_rate = TRANS_SUC_RATE)
+if __name__ == "__main__":
+    # call solve and store resulted matrices
+    test_world = world.World()
+    state_dict = state.StateDict(test_world) 
+    scmdp_solver = SCMDP(T = 15, m = test_world.num_road,  n = state_dict.num_state, A = len(ACTIONS), trans_suc_rate = TRANS_SUC_RATE)
+    #scmdp_solver.solve()
+    #scmdp_solver.save_to_file()
