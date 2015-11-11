@@ -14,8 +14,8 @@ HOME = 0
 REWARD = [0,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1]
 
 # capacity density upper bound
-CAP_DENSITY = [1.0, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05]
-#CAP_DENSITY = [1.0, 0.02, 0.1, 0.5, 0.01, 0.04, 0.3, 0.2, 0.01, 0.1, 0.2]
+#CAP_DENSITY = [1.0, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05]
+CAP_DENSITY = [1.0, 0.02, 0.1, 0.5, 0.01, 0.04, 0.3, 0.2, 0.01, 0.1, 0.2]
 INIT_DENSITY = [1.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 NUM_EPISODE = 100
@@ -29,7 +29,7 @@ SCMDPBF = 5
 ALGS = [CENTRALIZED, RANDOM, SAFE, GREEDY, SCMDPPHI, SCMDPBF]
 ALGS_NAME = ["CENTRALIZED", "RANDOM", "SAFE", "GREEDY", "SCMDPPHI", "SCMDPBF"]
 
-DROP_RATIO = 0.5 # each episode each agent in nonhome patch has probability to be dropped
+DROP_RATIO = 0.0 # each episode each agent in nonhome patch has probability to be dropped
 ADD_RATIO = 1.0 # each episode add some agents to home, but not exceeding initial total number
 
 TRANS_SUC_RATE = 0.9 # state transition success rate

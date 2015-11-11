@@ -2,10 +2,12 @@ from config import *
 import world
 
 class Car:
-    def __init__(self, identity, start, dest, world):   
+    def __init__(self, identity, start, dest, world, car_type):   
         self.identity = identity
         self.pos = cp.deepcopy(start)
         self.dest = cp.deepcopy(dest)
+        self.car_type = car_type
+        self.cap = CAP_CAR[self.car_type]
         # the world this agent lives in
         self.world = world
         # update road block

@@ -6,7 +6,7 @@ import copy as cp
 import scipy.stats as ss
 
 NUM_EXP = 50
-dirname = ""
+dirname = "data_4/"
 
 def process_file(filename):
     data_file = open(filename, 'r')
@@ -75,8 +75,8 @@ if SHOW_REWARD:
     plt.errorbar(grdy_eps[0], grdy_vs_mean, yerr=ss.t.ppf(0.95, grdy_dof)*grdy_vs_std, color = 'g')
     plt.errorbar(smdpphi_eps[0], smdpphi_vs_mean, yerr=ss.t.ppf(0.95, smdpphi_dof)*smdpphi_vs_std, color = 'r')
     plt.errorbar(smdpbf_eps[0], smdpbf_vs_mean, yerr=ss.t.ppf(0.95, smdpbf_dof)*smdpbf_vs_std, color = 'b')
-    ax = plt.subplot()
-    ax.set_yscale("log")
+    plt.yscale("symlog",linthreshy=100)
+#    ax.set_yscale("log")
     plt.show()
 
 

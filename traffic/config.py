@@ -25,12 +25,21 @@ CAP_VT_ROAD = [10,10,10]
 CONGEST_FACTOR = 1.0 
 
 # car actions
-UP = 0; DOWN = 1; LEFT = 2; RIGHT = 3; STAY = 4
-ACTIONS = [UP, DOWN, LEFT, RIGHT, STAY]
+STAY = 0; UP = 1; DOWN = 2; LEFT = 3; RIGHT = 4; 
+ACTIONS = [STAY, UP, DOWN, LEFT, RIGHT]
 
 NUM_CARS = 1
 
 # for visualization
 CELL_SIZE = 50
 
+# for planning only
+TRANS_SUC_RATE = 1.0
 
+# car types
+SMALL = 0
+BIG = 1
+CAP_SMALL = 1
+CAP_BIG = 3
+CAR_TYPE = [SMALL, BIG]
+CAP_CAR = [CAP_SMALL, CAP_BIG]
