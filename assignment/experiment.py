@@ -29,7 +29,7 @@ SCMDPBF = 5
 ALGS = [CENTRALIZED, RANDOM, SAFE, GREEDY, SCMDPPHI, SCMDPBF]
 ALGS_NAME = ["CENTRALIZED", "RANDOM", "SAFE", "GREEDY", "SCMDPPHI", "SCMDPBF"]
 
-DROP_RATIO = 0.0 # each episode each agent in nonhome patch has probability to be dropped
+DROP_RATIO = 0.5 # each episode each agent in nonhome patch has probability to be dropped
 ADD_RATIO = 1.0 # each episode add some agents to home, but not exceeding initial total number
 
 TRANS_SUC_RATE = 0.9 # state transition success rate
@@ -191,7 +191,7 @@ class Experiment:
                 # assignment
                 for patch in self.patches:
                     for agent in patch.agents: 
-                        patch_num = SCMDP_SELECTOR.choose_act_phi(state = patch.identity, T = agent.clock)
+                        patch_num = SCMDP_SELECTOR.choose_act_phi(state = patch.identity, T = episode)
                         agent.assign_to(patch_num)
                         agent.tick() # important: time clock counts
                 # actual move step
@@ -202,7 +202,7 @@ class Experiment:
                 # assignment
                 for patch in self.patches:
                     for agent in patch.agents: 
-                        patch_num = SCMDP_SELECTOR.choose_act(state = patch.identity, T = agent.clock)
+                        patch_num = SCMDP_SELECTOR.choose_act(state = patch.identity, T = episode) # agent.clock 
                         agent.assign_to(patch_num)
                         agent.tick() # important: time clock counts
                 # actual move step
@@ -223,7 +223,7 @@ class Experiment:
             # Drop agents and add to home (except home)
             for i in range(1, len(self.patches)):
                 for agent in self.patches[i].agents[:]: #copy
-                    if random.random() < self.drop_ratio:
+                    if random.random() < random.random(): #self.drop_ratio:
                         self.patches[i].remove_agent(agent)
                         self.drop_count += 1 
 
