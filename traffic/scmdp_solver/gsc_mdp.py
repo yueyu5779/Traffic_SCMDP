@@ -29,7 +29,9 @@ def mdp(G_, R_, RT_, L_, d_, x0_, gamma_):
     [T, n, A]=R.shape
     T=T+1
     # prelocating
-
+    
+    ### The following is the prelocation of the outputs, they are all prelocated as numpy zero matrices.
+    ### If you have a more efficient way of prelocation please do
     # unconstrained  policy
     un_U=np.zeros((n, T))
     un_Q=np.zeros((T-1, n, A))
