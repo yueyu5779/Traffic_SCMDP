@@ -16,7 +16,7 @@ class Experiment:
         self.test_world = world.World()
         # initialize car
         self.cars = []
-        for i in range(NUM_CARS):
+        for i in range(NUM_CAR):
             new_car = car.Car(identity = i, start = [0,0], dest = [12,12], world = self.test_world, car_type = SMALL)
             self.cars.append(new_car)
         

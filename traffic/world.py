@@ -54,11 +54,8 @@ class World:
                 # the position of the intersection that ith and jth roads cross
                 ij_pos = [i * (NUM_BLK_BTW + 1), j * (NUM_BLK_BTW + 1)]
                 # calculate capacity
-                # four conrner intersects
-                if ((i == 0 and j == 0) or \
-                (i == 0 and j == len(CAP_VT_ROAD) - 1) \
-                or (i == len(CAP_HZ_ROAD) - 1 and j == 0) \
-                or (i == len(CAP_HZ_ROAD) -1 and j == len(CAP_VT_ROAD) - 1)):
+                # start or destinations
+                if ij_pos in START or ij_pos in DESTINATION:
                     cap = CAP_MAX
 #                # Top and bottom intersects but not corners
 #                elif (i == 0) or (i == len(CAP_HZ_ROAD) - 1): 
@@ -97,6 +94,21 @@ class World:
         if self.world_map[pos[ROW]][pos[COL]].block_type == OFFROAD: return False
         # check the traffic
         return not(self.world_map[pos[ROW]][pos[COL]].congest())
+
+    def move_consq(self, agent_pos, action):
+        '''return the consequence of taking an action in start position'''
+        if action == UP: pos = [agent_pos[ROW] - 1, agent_pos[COL]]
+        elif action == DOWN: pos = [agent_pos[ROW] + 1, agent_pos[COL]]
+        elif action == LEFT: pos = [agent_pos[ROW], agent_pos[COL] - 1]
+        elif action == RIGHT: pos = [agent_pos[ROW], agent_pos[COL] + 1]
+        elif action == STAY: pos = cp.deepcopy(agent_pos)
+        '''check if a move to a new pos is legal'''
+        # check that the agent cannot move out of boundary
+        if (pos[ROW] >= self.rows): pos[ROW] = self.rows - 1
+        if (pos[ROW] < 0): pos[ROW] = 0
+        if (pos[COL] >= self.columns): pos[COL] = self.columns - 1
+        if (pos[COL] < 0): pos[COL] = 0
+        return pos
 
     def dist(self, start_pos, dest_pos):
         '''get the distance between two positions'''

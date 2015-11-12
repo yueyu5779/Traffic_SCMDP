@@ -5,6 +5,17 @@ import car
 import world
 from config import *
 
+# some help functions for 2d grids
+def get_dist(pos0, pos1):
+    return abs(pos0[ROW] - pos1[ROW]) + abs(pos0[COL] - pos1[COL])
+
+def same_loc(pos0, pos1):
+    return get_dist(pos0, pos1) == 0
+
+def reachable(pos0, pos1):
+    '''within one step'''
+    return get_dist(pos0, pos1) <= 1
+
 def to_key(state):
     '''change a state vec to string'''
     if len(state) < 5:
@@ -21,19 +32,22 @@ class StateDict:
         self.state_num = {} # str(list), num type
         self.num_state = {} # str(num), list type
         self.construct_dict()
-        self.num_state = len(self.state_num)
-
+        # number of enumerated states
+        self.n = len(self.state_num)
+        
     def construct_dict(self):
         state_count = 0
-        for i in range(self.world.rows):
-            for j in range(self.world.columns):
-                if self.world.world_map[i][j].block_type != OFFROAD:
-                    for dest in DESTINATION:
-                        for car_type in CAR_TYPE:
+
+        for car_type in CAR_TYPE:
+            for dest in DESTINATION:
+                for i in range(self.world.rows):
+                    for j in range(self.world.columns):
+                        if self.world.world_map[i][j].block_type != OFFROAD:
                             state = [i, j,dest[ROW], dest[COL], car_type]
                             self.state_num[to_key(state)] = state_count
                             self.num_state[str(state_count)] = cp.deepcopy(state)
-                            state_count += 1    
+                            state_count += 1   
+
     def get_num(self, state):
         '''given a state vector, find its corresponding num, car can use this to get its state num and query policy'''
         return self.state_num[to_key(cp.deepcopy(state))] 
@@ -44,7 +58,7 @@ class StateDict:
 
     def print_states(self):
         print("dictionary is: ")
-        for i in range(len(self.num_state)):
+        for i in range(self.n):
             state = self.get_state(i)
             num = self.get_num(state)
             print(num, state)
