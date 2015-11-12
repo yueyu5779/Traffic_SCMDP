@@ -15,7 +15,9 @@ def policy(G, R0, L, d, u_next, gamma):
 
     [m,temp]=d.shape
     [A, temp, n]=G.shape
-
+    ### The following is the definition of the inputs, they are all prelocated as numpy zero matrices.
+    ### If you have a more efficient way of prelocation please do
+    #######################################################################
     GG= np.zeros((n*n,n*A))
 
     for i in range(n):
@@ -73,7 +75,10 @@ def policy(G, R0, L, d, u_next, gamma):
     # z_1a0= np.zeros((n*A,1))
     # z_1a1= np.zeros((n*A,n))
     # z_1a2= np.zeros((n*A,n*n))
+#############################################################
 
+##The following are all zero/identity matrices that defined for later reference
+##############################################################
     e_n= np.eye(n)
     e_m=np.eye(m)
     e_mn=np.eye(m*n)
@@ -127,7 +132,13 @@ def policy(G, R0, L, d, u_next, gamma):
     z_nA_nn= np.zeros((n*A,n*n))
     z_nA_mn= np.zeros((n*A,m*n))
     z_nA_nA= np.zeros((n*A,n*A))
-
+    ############################################################
+    
+    ##The following is the definition of the input matrices Aeq&beq(Aineq&bineq) for equality(inequality) constraints
+    ## Aeq_ri(Aineq_ri) is the i th row of Aeq(Aineq)
+    ## Aeq and Aineq ARE HIGHLY SPARSE, since most of them are those zero matrices defined before
+    ## beq, bineq, c are also sparse but they are vectors, thus not major issue
+    #############################################################
     Aeq_r1= np.concatenate((GG,           -FF,          z_nn_mn,     z_nn_mm,     z_nn_n,     z_nn_m,     z_nn_n,      z_nn_m,     z_nn_1), axis=1)
     Aeq_r2= np.concatenate((RR,           z_n_nn,       z_n_mn,      z_n_mm,      z_n_n,      z_n_m,      -e_n,        z_n_m,      z_n_1), axis=1)
     Aeq_r3= np.concatenate((z_n_nA,       UU,           z_n_mn,      z_n_mm,      -e_n,       z_n_m,      e_n,         z_n_m,      z_n_1), axis=1)
@@ -148,7 +159,7 @@ def policy(G, R0, L, d, u_next, gamma):
 
     Aineq= np.concatenate((Aineq_r1, Aineq_r2, Aineq_r3, Aineq_r4, Aineq_r5, Aineq_r6), axis=0)
     bineq= np.concatenate((d,        z_n_1,     z_nA_1,     z_mn_1,     z_mm_1,     z_m_1), axis=0)
-
+###########################################################################################
     Aeq= matrix(Aeq)
     beq= matrix(beq)
     Aineq= matrix(Aineq)
