@@ -29,7 +29,8 @@ def mdp(G_, R_, RT_, L_, d_, x0_, gamma_):
     [T, n, A]=R.shape
     T=T+1
     # prelocating
-
+    #numpy zero matrices prelocating
+##############################################################
     # unconstrained  policy
     un_U=np.zeros((n, T))
     un_Q=np.zeros((T-1, n, A))
@@ -54,7 +55,7 @@ def mdp(G_, R_, RT_, L_, d_, x0_, gamma_):
     bf_Q=np.zeros((T-1, n, A))
     bf_M=np.zeros((T-1, n, n))
     bf_x=np.zeros((n, T))
-
+##############################################################################
     # Initialization
     un_U[:,[T-1]]=RT
     phi_U[:,[T-1]]=RT
